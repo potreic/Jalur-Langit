@@ -35,6 +35,6 @@ It helps users discover what skills they need for specific roles and what job op
    python bot.py
    ```
 
-## Credit:
+## 🤼 Credit:
 1. Athaya Harmana Putri as knowledge and logic developer
 2. Nibroos Aurore Majiid as knowlegde and testing engineer
