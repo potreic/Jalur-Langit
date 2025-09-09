@@ -35,5 +35,5 @@ The bot in static manner 👾:
 
 ##
 <div align="center">
-Crafted with 💚 by Rore & Thaya | Intended of NLP's project regex-based chatbot
+Crafted with 💚 by Rore & Thaya | Intended for NLP's project regex-based chatbot
 </div>
