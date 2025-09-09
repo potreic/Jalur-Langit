@@ -23,16 +23,17 @@ It helps users discover what skills they need for specific roles and what job op
    ```
    
 ## 👩‍💻 Demo
-Here's the demo for bot's functionality
-![Bot Demo GIF](https://github.com/potreic/Jalur-Langit/blob/main/assets/Screen%20Recording%202025-09-10%20013112.gif?raw=true)
-![Successful Test Run](https://github.com/potreic/Jalur-Langit/blob/main/assets/Screenshot%202025-09-10%20012931.png?raw=true)
+Here is a demonstration of the bot's  functionality:
+<img src="https://github.com/potreic/Jalur-Langit/blob/main/assets/Screen%20Recording%202025-09-10%20013112.gif?raw=true" alt="Bot Demo GIF" width="700">
+
+The bot in static manner 👾:
+<img src="https://github.com/potreic/Jalur-Langit/blob/main/assets/Screenshot%202025-09-10%20012931.png?raw=true" alt="Successful Test Run" width="700">
 
 ## 🤼 Credit:
+1. Athaya Harmana Putri: logic and knowledge engineer
+2. Nibroos Haryanto: logic and testing engineer
+
+##
 <div align="center">
-**Athaya Harmana Putri**
-<br />
-*Knowledge & Logic Developer*
-**Nibroos Aurore Majiid**
-<br />
-*Knowledge & Testing Engineer*
+Crafted with 💚 by Rore & Thaya | Intended of NLP's project regex-based chatbot
 </div>
