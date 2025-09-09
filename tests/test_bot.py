@@ -1,10 +1,18 @@
 import unittest
 import sys
 import os
+import logging
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import bot
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    filename='tests/test.log',
+    filemode='w'
+)
 
 # --- Mock Classes to Simulate Discord Objects ---
 class MockChannel:
@@ -55,6 +63,7 @@ class TestBotLogic(unittest.TestCase):
         """Tests the full get_response flow for a skill-related question."""
         mock_message = MockMessage("what skills to be a data scientist?")
         response = bot.get_response(mock_message)
+        logging.info(f"Running test_get_response_ask_skills_successful. Bot Response:\n{response}")
         self.assertIn("To become a **Data Scientist**", response)
         self.assertIn("Python (Pandas, NumPy)", response)
 
@@ -68,6 +77,7 @@ class TestBotLogic(unittest.TestCase):
         # Second message (the follow-up)
         msg2 = MockMessage("what about backend developer?", channel_id=111)
         response = bot.get_response(msg2)
+        logging.info(f"Running test_get_response_follow_up_question. Bot Response:\n{response}")
         
         self.assertIn("To become a **Backend Developer**", response)
         self.assertIn("SQL / NoSQL Databases", response)
@@ -77,8 +87,8 @@ class TestBotLogic(unittest.TestCase):
         """Tests if the bot provides the default fallback response for unclear input."""
         mock_message = MockMessage("can you tell me a joke?")
         response = bot.get_response(mock_message)
+        logging.info(f"Running test_get_response_unknown_input. Bot Response:\n{response}")
         self.assertIn("I specialize in tech career guidance", response)
 
-# This allows you to run the file directly
 if __name__ == '__main__':
     unittest.main()
