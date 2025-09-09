@@ -1,4 +1,4 @@
-# IT Career Consultant Bot 🤖
+# Jalur-Langit Bot 🤖
 
 A Discord chatbot that acts as a **career consultant for IT fields**.  
 It helps users discover what skills they need for specific roles and what job opportunities they could pursue with their current tech knowledge.  
