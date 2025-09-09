@@ -2,6 +2,7 @@ import os
 import re
 import discord
 from dotenv import load_dotenv
+from knowledge_base import *
 
 # Load Bot's Token
 load_dotenv()
@@ -13,137 +14,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 
-tech_to_career = {
-    "python": ["Data Scientist", "Backend Developer", "Machine Learning Engineer", "Python Developer", "Data Analyst", "Automation Engineer"],
-    "javascript": ["Frontend Developer", "Fullstack Developer", "Web Developer", "JavaScript Developer", "UI Engineer"],
-    "typescript": ["Frontend Developer", "Fullstack Developer", "Node.js Developer"],
-    "java": ["Enterprise Developer", "Android Developer", "Backend Engineer", "Java Developer", "Cloud Engineer"],
-    "c#": ["Game Developer", ".NET Developer", "Windows Application Developer", "Backend Developer"],
-    "go": ["Backend Developer", "Cloud Engineer", "Site Reliability Engineer (SRE)"],
-    "rust": ["Systems Engineer", "Backend Developer", "Blockchain Developer"],
-    "php": ["Backend Developer", "WordPress Developer", "Fullstack Developer"],
-    "swift": ["iOS Developer", "macOS Developer"],
-    "kotlin": ["Android Developer", "Backend Developer"],
-    "linux": ["DevOps Engineer", "System Administrator", "Cloud Engineer", "Site Reliability Engineer (SRE)"],
-    "html": ["Frontend Developer", "Web Designer", "UI Developer", "Email Developer"],
-    "css": ["Frontend Developer", "Web Designer", "UI Developer"],
-    "react": ["Frontend Developer", "React Developer", "UI Engineer", "Fullstack Developer"],
-    "node": ["Backend Developer", "Fullstack Developer", "API Developer", "Node.js Developer"],
-    "sql": ["Database Administrator", "Data Analyst", "Data Engineer", "Backend Developer", "Business Intelligence Analyst"],
-    "aws": ["DevOps Engineer", "Cloud Architect", "Cloud Engineer", "Solutions Architect", "SRE"],
-    "azure": ["DevOps Engineer", "Cloud Architect", "Cloud Engineer", "Solutions Architect"],
-    "gcp": ["DevOps Engineer", "Cloud Architect", "Cloud Engineer", "Data Engineer"],
-    "docker": ["DevOps Engineer", "Site Reliability Engineer (SRE)", "Backend Developer", "Cloud Engineer"],
-    "kubernetes": ["DevOps Engineer", "Site Reliability Engineer (SRE)", "Cloud Engineer"],
-    "terraform": ["DevOps Engineer", "Cloud Engineer", "Infrastructure Engineer"],
-    "machine learning": ["Data Scientist", "ML Engineer", "AI Developer", "Machine Learning Specialist", "Computer Vision Engineer"],
-    "tableau": ["Data Analyst", "Business Intelligence Analyst", "Data Visualisation Specialist"],
-    "power bi": ["Data Analyst", "Business Intelligence Analyst", "Data Visualisation Specialist"],
-    "cybersecurity": ["Security Analyst", "Ethical Hacker", "Penetration Tester", "Incident Responder", "Security Engineer"],
-    "figma": ["UI/UX Designer", "Product Designer", "Web Designer"],
-    "r": ["Data Scientist", "Data Analyst", "Statistician", "Quantitative Analyst"]
-}
-
-career_to_tech = {
-    "web developer": ["HTML", "CSS", "JavaScript", "Git", "APIs (REST, GraphQL)", "Browser DevTools"],
-    "frontend developer": ["HTML", "CSS", "JavaScript", "TypeScript", "React / Vue / Angular", "Git", "Package Managers (NPM/Yarn)"],
-    "backend developer": ["Python / Java / Go / Node.js", "SQL / NoSQL Databases", "Docker", "Kubernetes", "Cloud (AWS/Azure/GCP)", "Git", "CI/CD"],
-    "fullstack developer": ["Frontend Skills", "Backend Skills", "Databases", "Git", "Cloud Deployment"],
-    "data scientist": ["Python (Pandas, NumPy)", "SQL", "Machine Learning (Scikit-learn)", "Deep Learning (TensorFlow/PyTorch)", "Data Visualization (Tableau/Power BI)", "Statistics", "Git"],
-    "devops engineer": ["Linux", "Cloud (AWS/Azure/GCP)", "Docker", "Kubernetes", "Terraform / IaC", "CI/CD (Jenkins, GitLab CI)", "Scripting (Bash/Python)"],
-    "cloud engineer": ["Cloud (AWS/Azure/GCP)", "Terraform / IaC", "Docker", "Kubernetes", "Networking", "Linux", "Security Principles"],
-    "mobile developer": ["Swift (iOS) / Kotlin (Android)", "Xcode / Android Studio", "Git", "API Integration", "Firebase"],
-    "ui ux designer": ["Figma / Sketch / Adobe XD", "Wireframing", "Prototyping", "User Research", "User Testing", "Design Systems"],
-    ".net developer": ["C#", ".NET Framework", "ASP.NET", "SQL Server", "Azure", "Git"],
-    "cybersecurity specialist": ["Networking (TCP/IP)", "Linux", "Python Scripting", "Penetration Testing Tools (Metasploit, Burp Suite)", "Cryptography", "Security Frameworks (NIST)"],
-    "data analyst": ["SQL", "Excel", "Python (Pandas)", "Tableau / Power BI", "Statistics", "Communication Skills"],
-    "data engineer": ["Python / Scala / Java", "Advanced SQL", "Apache Spark", "Data Warehousing (Snowflake, BigQuery)", "ETL/ELT Processes", "Airflow"],
-    "game developer": ["C++ / C#", "Unity / Unreal Engine", "Linear Algebra & Physics", "3D Modeling Software (Blender)", "Git"],
-    "machine learning engineer": ["Python", "TensorFlow / PyTorch", "Docker", "Kubernetes", "Cloud ML Platforms (SageMaker/Vertex AI)", "MLOps Principles"]
-}
-
-job_descriptions = {
-    "web developer": "Web Developers are the builders of the internet, crafting everything from simple landing pages to complex, interactive web applications. They use a blend of frontend and backend skills to bring ideas to life online.",
-    "frontend developer": "Frontend Developers are the masters of user experience, focusing on the look, feel, and interactivity of a website. They translate design into code, ensuring a seamless and engaging experience for every visitor.",
-    "backend developer": "Backend Developers are the architects of a website's brain. They work behind the scenes, managing servers, databases, and application logic to ensure everything runs smoothly, securely, and at scale.",
-    "fullstack developer": "Fullstack Developers are the versatile all-rounders of the tech world. They are proficient in both frontend and backend technologies, enabling them to build and manage an entire web application from start to finish.",
-    "data scientist": "Data Scientists are digital detectives who uncover hidden insights from complex data. They use statistics, machine learning, and programming to answer critical business questions and predict future trends.",
-    "devops engineer": "DevOps Engineers are the bridge between development and operations. They build and automate infrastructure and deployment pipelines, enabling teams to release reliable software faster and more frequently.",
-    "cloud engineer": "Cloud Engineers specialize in designing, building, and managing applications on cloud platforms like AWS, Azure, or GCP. They are experts in scalability, security, and maintaining massive, distributed systems.",
-    "mobile developer": "Mobile Developers create the applications we use every day on our smartphones and tablets. They specialize in either iOS or Android, building intuitive and powerful experiences for users on the go.",
-    "ui/ux designer": "UI/UX Designers are the champions of the user. They research, design, and prototype user-friendly interfaces, ensuring that digital products are not only beautiful but also intuitive and enjoyable to use.",
-    ".net developer": ".NET Developers use the powerful Microsoft ecosystem, primarily with C#, to build robust, high-performance applications for web, desktop, and enterprise services.",
-    "cybersecurity specialist": "Cybersecurity Specialists are the digital guardians protecting systems and data from malicious attacks. They find vulnerabilities, respond to incidents, and build defensive measures to keep information safe.",
-    "data analyst": "Data Analysts translate data into actionable insights. They query databases, create visualizations, and build reports that help businesses understand performance and make better decisions.",
-    "data engineer": "Data Engineers are the architects of data infrastructure. They build and maintain robust data pipelines that collect, transform, and transport massive amounts of data, making it available for Data Scientists to use.",
-    "game developer": "Game Developers bring virtual worlds to life. Using programming and creative skills, they build the mechanics, systems, and interactive experiences that define modern video games.",
-    "machine learning engineer": "ML Engineers are specialized software engineers who build and deploy machine learning models at scale. They productionize the models created by Data Scientists, turning predictive insights into real-world applications.",
-    "enterprise developer": "Enterprise Developers build large-scale, complex applications for businesses, focusing on high performance and security.",
-    "android developer": "Android Developers specialize in creating applications for Android-powered smartphones and devices.",
-    "backend engineer": "Backend Engineers, similar to Backend Developers, build and maintain the server, database, and application logic.",
-    "java developer": "Java Developers use the Java language to build a wide range of applications, from web services to mobile and desktop apps.",
-    "system administrator": "System Administrators are responsible for the upkeep, configuration, and reliable operation of computer systems, especially servers.",
-    "cloud architect": "Cloud Architects design and manage an organization's cloud computing strategy, making high-level decisions about cloud services and infrastructure.",
-    "security analyst": "Security Analysts are on the front lines of cyber defense, monitoring networks for threats, investigating incidents, and implementing security policies.",
-    "database administrator": "Database Administrators ensure that an organization's databases are running efficiently, securely, and are properly backed up and maintained.",
-    "python developer": "Python Developers are versatile programmers who build a wide range of applications, from web backends and APIs to data analysis tools and automation scripts.",
-    "automation engineer": "Automation Engineers design and write software to automate repetitive tasks, such as testing, software builds, or business processes, to improve efficiency and reduce human error.",
-    "javascript developer": "JavaScript Developers are experts in the language of the web, building interactive frontend experiences and fast, scalable backend services with Node.js.",
-    "ui engineer": "UI Engineers are specialized frontend developers who bridge the gap between design and code, focusing on implementing complex user interfaces and design systems with precision.",
-    "node.js developer": "Node.js Developers specialize in building fast, scalable, and data-intensive backend services and APIs using JavaScript outside of the browser.",
-    "windows application developer": "Windows Application Developers build native software for the Windows desktop ecosystem, creating tools and applications for millions of users.",
-    "site reliability engineer (sre)": "SREs treat operations as a software problem. They build automated solutions to manage, monitor, and ensure the reliability of large-scale production systems.",
-    "systems engineer": "Systems Engineers design and manage complex engineering systems over their life cycles, ensuring all components work together seamlessly and reliably.",
-    "blockchain developer": "Blockchain Developers design and build decentralized applications (dApps) and smart contracts on blockchain platforms like Ethereum.",
-    "wordpress developer": "WordPress Developers specialize in building and customizing websites using the WordPress CMS, creating themes, plugins, and custom solutions.",
-    "ios developer": "iOS Developers use Swift and Xcode to build applications specifically for Apple's ecosystem, including iPhone, iPad, and Apple Watch.",
-    "macos developer": "macOS Developers create applications that run natively on Apple's desktop computers, leveraging the full power of the operating system.",
-    "web designer": "Web Designers focus on the visual aesthetics and user experience of a website, creating layouts, color schemes, and graphics to produce a visually appealing final product.",
-    "ui developer": "UI Developers are similar to Frontend Developers but with a stronger focus on translating visual designs into pixel-perfect, interactive code.",
-    "email developer": "Email Developers specialize in coding HTML emails that are responsive and render correctly across dozens of different email clients.",
-    "react developer": "React Developers are specialists in the React library, building fast, component-based user interfaces for modern web applications.",
-    "api developer": "API Developers focus on designing, building, and maintaining the Application Programming Interfaces that allow different software systems to communicate with each other.",
-    "business intelligence analyst": "BI Analysts use data to help businesses make smarter decisions. They create dashboards and reports to track key performance indicators and analyze trends.",
-    "infrastructure engineer": "Infrastructure Engineers design, build, and maintain the foundational hardware and software of a company's IT systems, from servers to networks.",
-    "solutions architect": "Solutions Architects design high-level solutions to solve specific business problems, often involving the integration of multiple systems and cloud services.",
-    "ml engineer": "ML Engineers productionize machine learning models, taking them from a research environment and deploying them into scalable, real-world applications.",
-    "ai developer": "AI Developers work on creating systems that mimic human intelligence, including areas like natural language processing, computer vision, and expert systems.",
-    "machine learning specialist": "Machine Learning Specialists are experts in specific ML algorithms and techniques, often conducting research and developing new models.",
-    "computer vision engineer": "Computer Vision Engineers build systems that allow computers to 'see' and interpret the visual world from images and videos.",
-    "data visualisation specialist": "Data Visualisation Specialists are experts in turning complex data into clear, compelling, and insightful charts, graphs, and dashboards.",
-    "ethical hacker": "Ethical Hackers (or Penetration Testers) are hired to legally break into systems to find and report security vulnerabilities before malicious attackers can exploit them.",
-    "penetration tester": "Penetration Testers simulate cyberattacks on an organization's systems to identify security weaknesses that need to be fixed.",
-    "incident responder": "Incident Responders are the emergency services of cybersecurity. They are the first to act when a security breach occurs, working to contain the threat and minimize damage.",
-    "security engineer": "Security Engineers design and build systems to be secure from the ground up, implementing firewalls, encryption, and other protective measures.",
-    "product designer": "Product Designers have a broad role that encompasses UI/UX design, user research, and strategic thinking to shape the entire experience of a product.",
-    "statistician": "Statisticians apply statistical methods and models to real-world problems, often in research, finance, or government, to analyze data and forecast trends.",
-    "quantitative analyst": "Quantitative Analysts ('Quants') design and implement complex mathematical models for financial firms to price securities, manage risk, and identify trading opportunities."
-}
-
 conversation_memory = {}
-
-intent_keywords = {
-    'ask_skills': [
-        r'skill', r'learn', r'need', r'require', r'what.*become', r'how.*become',
-        r'technolog', r'tech', r'stack', r'tools', r'study', r'want.*be', r'to be'
-    ],
-    'ask_careers': [
-        r'career', r'job', r'what.*do', r'pursue', r'with.*skill', r'path',
-        r'opportunity', r'can do', r'profficent', r'pretty good', r'familiar',
-        r'expert', r'know', r'good with', r'knowledge', r'work', r'role', r'field'
-    ]
-}
-
-career_priorities = [
-    ('frontend developer', 'web developer'),
-    ('backend developer', 'web developer'),
-    ('machine learning engineer', 'data scientist'),
-]
-
-acknowledgment_phrases = [
-    'i see', 'isee', 'okay', 'ok', 'oke', 'ok then', 
-    'got it', 'cool', 'ah okay', 'i understand', 'makes sense'
-]
 
 def detect_tech(message):
     message_lower = message.lower()
@@ -163,20 +34,6 @@ def detect_tech(message):
 
 def detect_career(message):
     message_lower = message.lower()
-    career_keywords = {
-    "web developer": r"web.*(dev|develop|engine|program)|website.*(dev|develop|engine|program)|full.?stack",
-    "frontend developer": r"front.?end.*(dev|develop|engine)|ui.*(dev|develop|engine)|user.?interface.*(dev|develop|engine)|client.?side.*(dev|develop|engine)",
-    "backend developer": r"back.?end.*(dev|develop|engine)|server.?side.*(dev|develop|engine)|api.*(dev|develop|engine)",
-    "data scientist": r"data scien|data analy|machine learning scien|ml scien",
-    "devops engineer": r"devops|sre|site reliability|cloud engineer|infrastructure engineer|ci.?cd",
-    "mobile developer": r"mobile.*(dev|develop|engine)|app.*(dev|develop|program)|ios.*(dev|develop)|android.*(dev|develop)",
-    "ui ux designer": r"ui.*design|ux.*design|user.*experience|user.*interface|wirefram|prototyp",
-    ".net developer": r"\.net.*(dev|develop|engine)|c#.*(dev|develop|program)|c sharp.*(dev|develop)",
-    "machine learning engineer": r"ml engineer|machine learning engineer|mle",
-    "python developer": r"python.*(dev|develop|engine|program)",
-    "java developer": r"java.*(dev|develop|engine|program)",
-    "cybersecurity specialist": r"cyber ?security|infosec|security analy|ethical hack|penetration test|pen.?test|hack|hacker"
-}
     detected_careers = []
     for career, pattern in career_keywords.items():
         if re.search(pattern, message_lower):
@@ -255,6 +112,7 @@ def get_response(message):
             
     conversation_memory.pop(channel_id, None)
     return "I specialize in tech career guidance. You can ask me:\n• What skills do I need to become a [job title]?\n• What careers can I pursue with [technology] skills?"
+
 @client.event
 async def on_message(message):
     if message.author == client.user:
@@ -263,4 +121,5 @@ async def on_message(message):
     if response:
         await message.channel.send(response)
 
-client.run(TOKEN)
+if __name__ == "__main__":
+    client.run(TOKEN)
