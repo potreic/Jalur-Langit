@@ -23,6 +23,8 @@ It helps users discover what skills they need for specific roles and what job op
    ```
    
 ## 👩‍💻 Demo
+![Bot Demo GIF](https://github.com/potreic/Jalur-Langit/blob/main/assets/Screen%20Recording%202025-09-10%20013112.gif?raw=true)
+![Successful Test Run](https://github.com/potreic/Jalur-Langit/blob/main/assets/Screenshot%202025-09-10%20012931.png?raw=true)
 
 ## 🤼 Credit:
 1. Athaya Harmana Putri as knowledge and logic developer
