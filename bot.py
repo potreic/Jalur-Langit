@@ -1,6 +1,5 @@
 import os
 import re
-import random
 import discord
 from dotenv import load_dotenv
 
@@ -14,183 +13,253 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 
-# Technology to career mapping with more specific roles
 tech_to_career = {
-    "python": ["Data Scientist", "Backend Developer", "Machine Learning Engineer", "Python Developer"],
-    "javascript": ["Frontend Developer", "Fullstack Developer", "Web Developer", "JavaScript Developer"],
-    "java": ["Enterprise Developer", "Android Developer", "Backend Engineer", "Java Developer"],
-    "html": ["Frontend Developer", "Web Designer", "UI Developer"],
+    "python": ["Data Scientist", "Backend Developer", "Machine Learning Engineer", "Python Developer", "Data Analyst", "Automation Engineer"],
+    "javascript": ["Frontend Developer", "Fullstack Developer", "Web Developer", "JavaScript Developer", "UI Engineer"],
+    "typescript": ["Frontend Developer", "Fullstack Developer", "Node.js Developer"],
+    "java": ["Enterprise Developer", "Android Developer", "Backend Engineer", "Java Developer", "Cloud Engineer"],
+    "c#": ["Game Developer", ".NET Developer", "Windows Application Developer", "Backend Developer"],
+    "go": ["Backend Developer", "Cloud Engineer", "Site Reliability Engineer (SRE)"],
+    "rust": ["Systems Engineer", "Backend Developer", "Blockchain Developer"],
+    "php": ["Backend Developer", "WordPress Developer", "Fullstack Developer"],
+    "swift": ["iOS Developer", "macOS Developer"],
+    "kotlin": ["Android Developer", "Backend Developer"],
+    "linux": ["DevOps Engineer", "System Administrator", "Cloud Engineer", "Site Reliability Engineer (SRE)"],
+    "html": ["Frontend Developer", "Web Designer", "UI Developer", "Email Developer"],
     "css": ["Frontend Developer", "Web Designer", "UI Developer"],
-    "react": ["Frontend Developer", "React Developer", "UI Engineer"],
+    "react": ["Frontend Developer", "React Developer", "UI Engineer", "Fullstack Developer"],
     "node": ["Backend Developer", "Fullstack Developer", "API Developer", "Node.js Developer"],
-    "sql": ["Database Administrator", "Data Analyst", "Backend Developer", "Database Developer"],
-    "aws": ["DevOps Engineer", "Cloud Architect", "Infrastructure Engineer", "Cloud Engineer"],
-    "docker": ["DevOps Engineer", "Site Reliability Engineer", "Backend Developer"],
-    "machine learning": ["Data Scientist", "ML Engineer", "AI Developer", "Machine Learning Specialist"],
-    "cybersecurity": ["Security Analyst", "Ethical Hacker", "Security Engineer", "Cybersecurity Specialist"]
+    "sql": ["Database Administrator", "Data Analyst", "Data Engineer", "Backend Developer", "Business Intelligence Analyst"],
+    "aws": ["DevOps Engineer", "Cloud Architect", "Cloud Engineer", "Solutions Architect", "SRE"],
+    "azure": ["DevOps Engineer", "Cloud Architect", "Cloud Engineer", "Solutions Architect"],
+    "gcp": ["DevOps Engineer", "Cloud Architect", "Cloud Engineer", "Data Engineer"],
+    "docker": ["DevOps Engineer", "Site Reliability Engineer (SRE)", "Backend Developer", "Cloud Engineer"],
+    "kubernetes": ["DevOps Engineer", "Site Reliability Engineer (SRE)", "Cloud Engineer"],
+    "terraform": ["DevOps Engineer", "Cloud Engineer", "Infrastructure Engineer"],
+    "machine learning": ["Data Scientist", "ML Engineer", "AI Developer", "Machine Learning Specialist", "Computer Vision Engineer"],
+    "tableau": ["Data Analyst", "Business Intelligence Analyst", "Data Visualisation Specialist"],
+    "power bi": ["Data Analyst", "Business Intelligence Analyst", "Data Visualisation Specialist"],
+    "cybersecurity": ["Security Analyst", "Ethical Hacker", "Penetration Tester", "Incident Responder", "Security Engineer"],
+    "figma": ["UI/UX Designer", "Product Designer", "Web Designer"],
+    "r": ["Data Scientist", "Data Analyst", "Statistician", "Quantitative Analyst"]
 }
 
-# Career to technology mapping
 career_to_tech = {
-    "web developer": ["HTML", "CSS", "JavaScript", "React", "Node.js"],
-    "frontend developer": ["HTML", "CSS", "JavaScript", "React", "Vue", "Angular"],
-    "backend developer": ["Python", "Java", "Node.js", "SQL", "API Development"],
-    "data scientist": ["Python", "R", "SQL", "Machine Learning", "Statistics"],
-    "devops engineer": ["AWS", "Docker", "Kubernetes", "CI/CD", "Linux"],
-    "mobile developer": ["Swift", "Kotlin", "React Native", "Flutter", "Java"],
-    "ui ux designer": ["Figma", "Sketch", "Adobe XD", "User Research", "Wireframing"]
+    "web developer": ["HTML", "CSS", "JavaScript", "Git", "APIs (REST, GraphQL)", "Browser DevTools"],
+    "frontend developer": ["HTML", "CSS", "JavaScript", "TypeScript", "React / Vue / Angular", "Git", "Package Managers (NPM/Yarn)"],
+    "backend developer": ["Python / Java / Go / Node.js", "SQL / NoSQL Databases", "Docker", "Kubernetes", "Cloud (AWS/Azure/GCP)", "Git", "CI/CD"],
+    "fullstack developer": ["Frontend Skills", "Backend Skills", "Databases", "Git", "Cloud Deployment"],
+    "data scientist": ["Python (Pandas, NumPy)", "SQL", "Machine Learning (Scikit-learn)", "Deep Learning (TensorFlow/PyTorch)", "Data Visualization (Tableau/Power BI)", "Statistics", "Git"],
+    "devops engineer": ["Linux", "Cloud (AWS/Azure/GCP)", "Docker", "Kubernetes", "Terraform / IaC", "CI/CD (Jenkins, GitLab CI)", "Scripting (Bash/Python)"],
+    "cloud engineer": ["Cloud (AWS/Azure/GCP)", "Terraform / IaC", "Docker", "Kubernetes", "Networking", "Linux", "Security Principles"],
+    "mobile developer": ["Swift (iOS) / Kotlin (Android)", "Xcode / Android Studio", "Git", "API Integration", "Firebase"],
+    "ui ux designer": ["Figma / Sketch / Adobe XD", "Wireframing", "Prototyping", "User Research", "User Testing", "Design Systems"],
+    ".net developer": ["C#", ".NET Framework", "ASP.NET", "SQL Server", "Azure", "Git"],
+    "cybersecurity specialist": ["Networking (TCP/IP)", "Linux", "Python Scripting", "Penetration Testing Tools (Metasploit, Burp Suite)", "Cryptography", "Security Frameworks (NIST)"],
+    "data analyst": ["SQL", "Excel", "Python (Pandas)", "Tableau / Power BI", "Statistics", "Communication Skills"],
+    "data engineer": ["Python / Scala / Java", "Advanced SQL", "Apache Spark", "Data Warehousing (Snowflake, BigQuery)", "ETL/ELT Processes", "Airflow"],
+    "game developer": ["C++ / C#", "Unity / Unreal Engine", "Linear Algebra & Physics", "3D Modeling Software (Blender)", "Git"],
+    "machine learning engineer": ["Python", "TensorFlow / PyTorch", "Docker", "Kubernetes", "Cloud ML Platforms (SageMaker/Vertex AI)", "MLOps Principles"]
 }
 
-# Enhanced job descriptions including specific roles from tech_to_career
 job_descriptions = {
-    "web developer": "Web developers build and maintain websites. They work on both the front-end (what users see) and back-end (server-side) components.",
-    "frontend developer": "Frontend developers focus on the visual aspects of websites that users interact with. They use HTML, CSS, and JavaScript.",
-    "backend developer": "Backend developers work on server-side logic, databases, and application integration. They ensure the frontend has data when needed.",
-    "data scientist": "Data scientists analyze and interpret complex data to help organizations make decisions. They use statistics and machine learning.",
-    "devops engineer": "DevOps engineers bridge development and operations teams. They automate processes and manage infrastructure.",
-    "mobile developer": "Mobile developers create applications for smartphones and tablets, working with iOS or Android platforms.",
-    "ui ux designer": "UI/UX designers focus on user experience and interface design. They create wireframes and prototypes.",
-    "machine learning engineer": "Machine Learning Engineers design and implement machine learning applications and systems.",
-    "ai developer": "AI Developers create artificial intelligence solutions, including natural language processing and computer vision systems.",
-    "cloud architect": "Cloud Architects design and manage cloud computing strategies and infrastructure for organizations.",
-    "security analyst": "Security Analysts protect computer systems and networks from cyber threats and security breaches.",
-    "database administrator": "Database Administrators manage and maintain database systems, ensuring data integrity and availability.",
-    "python developer": "Python Developers specialize in building applications using the Python programming language.",
-    "javascript developer": "JavaScript Developers focus on building applications using JavaScript, both on frontend and backend.",
-    "java developer": "Java Developers create applications using the Java programming language, often for enterprise systems.",
-    "react developer": "React Developers specialize in building user interfaces using the React JavaScript library.",
-    "node.js developer": "Node.js Developers build server-side applications using the Node.js JavaScript runtime.",
-    "cloud engineer": "Cloud Engineers implement and maintain cloud infrastructure and services.",
-    "cybersecurity specialist": "Cybersecurity Specialists protect systems and networks from digital attacks and threats.",
-    "database developer": "Database Developers design and implement database solutions and write complex queries.",
-    "ethical hacker": "Ethical Hackers test systems for vulnerabilities to help organizations improve their security.",
-    "infrastructure engineer": "Infrastructure Engineers design and maintain the hardware and software infrastructure of organizations.",
-    "ml engineer": "ML Engineers design, build, and deploy machine learning models and systems.",
-    "machine learning specialist": "Machine Learning Specialists focus on developing and implementing ML algorithms and solutions.",
-    "api developer": "API Developers design and build application programming interfaces for software systems.",
-    "ui engineer": "UI Engineers implement user interfaces with a focus on both design and technical implementation."
+    "web developer": "Web Developers are the builders of the internet, crafting everything from simple landing pages to complex, interactive web applications. They use a blend of frontend and backend skills to bring ideas to life online.",
+    "frontend developer": "Frontend Developers are the masters of user experience, focusing on the look, feel, and interactivity of a website. They translate design into code, ensuring a seamless and engaging experience for every visitor.",
+    "backend developer": "Backend Developers are the architects of a website's brain. They work behind the scenes, managing servers, databases, and application logic to ensure everything runs smoothly, securely, and at scale.",
+    "fullstack developer": "Fullstack Developers are the versatile all-rounders of the tech world. They are proficient in both frontend and backend technologies, enabling them to build and manage an entire web application from start to finish.",
+    "data scientist": "Data Scientists are digital detectives who uncover hidden insights from complex data. They use statistics, machine learning, and programming to answer critical business questions and predict future trends.",
+    "devops engineer": "DevOps Engineers are the bridge between development and operations. They build and automate infrastructure and deployment pipelines, enabling teams to release reliable software faster and more frequently.",
+    "cloud engineer": "Cloud Engineers specialize in designing, building, and managing applications on cloud platforms like AWS, Azure, or GCP. They are experts in scalability, security, and maintaining massive, distributed systems.",
+    "mobile developer": "Mobile Developers create the applications we use every day on our smartphones and tablets. They specialize in either iOS or Android, building intuitive and powerful experiences for users on the go.",
+    "ui/ux designer": "UI/UX Designers are the champions of the user. They research, design, and prototype user-friendly interfaces, ensuring that digital products are not only beautiful but also intuitive and enjoyable to use.",
+    ".net developer": ".NET Developers use the powerful Microsoft ecosystem, primarily with C#, to build robust, high-performance applications for web, desktop, and enterprise services.",
+    "cybersecurity specialist": "Cybersecurity Specialists are the digital guardians protecting systems and data from malicious attacks. They find vulnerabilities, respond to incidents, and build defensive measures to keep information safe.",
+    "data analyst": "Data Analysts translate data into actionable insights. They query databases, create visualizations, and build reports that help businesses understand performance and make better decisions.",
+    "data engineer": "Data Engineers are the architects of data infrastructure. They build and maintain robust data pipelines that collect, transform, and transport massive amounts of data, making it available for Data Scientists to use.",
+    "game developer": "Game Developers bring virtual worlds to life. Using programming and creative skills, they build the mechanics, systems, and interactive experiences that define modern video games.",
+    "machine learning engineer": "ML Engineers are specialized software engineers who build and deploy machine learning models at scale. They productionize the models created by Data Scientists, turning predictive insights into real-world applications.",
+    "enterprise developer": "Enterprise Developers build large-scale, complex applications for businesses, focusing on high performance and security.",
+    "android developer": "Android Developers specialize in creating applications for Android-powered smartphones and devices.",
+    "backend engineer": "Backend Engineers, similar to Backend Developers, build and maintain the server, database, and application logic.",
+    "java developer": "Java Developers use the Java language to build a wide range of applications, from web services to mobile and desktop apps.",
+    "system administrator": "System Administrators are responsible for the upkeep, configuration, and reliable operation of computer systems, especially servers.",
+    "cloud architect": "Cloud Architects design and manage an organization's cloud computing strategy, making high-level decisions about cloud services and infrastructure.",
+    "security analyst": "Security Analysts are on the front lines of cyber defense, monitoring networks for threats, investigating incidents, and implementing security policies.",
+    "database administrator": "Database Administrators ensure that an organization's databases are running efficiently, securely, and are properly backed up and maintained.",
+    "python developer": "Python Developers are versatile programmers who build a wide range of applications, from web backends and APIs to data analysis tools and automation scripts.",
+    "automation engineer": "Automation Engineers design and write software to automate repetitive tasks, such as testing, software builds, or business processes, to improve efficiency and reduce human error.",
+    "javascript developer": "JavaScript Developers are experts in the language of the web, building interactive frontend experiences and fast, scalable backend services with Node.js.",
+    "ui engineer": "UI Engineers are specialized frontend developers who bridge the gap between design and code, focusing on implementing complex user interfaces and design systems with precision.",
+    "node.js developer": "Node.js Developers specialize in building fast, scalable, and data-intensive backend services and APIs using JavaScript outside of the browser.",
+    "windows application developer": "Windows Application Developers build native software for the Windows desktop ecosystem, creating tools and applications for millions of users.",
+    "site reliability engineer (sre)": "SREs treat operations as a software problem. They build automated solutions to manage, monitor, and ensure the reliability of large-scale production systems.",
+    "systems engineer": "Systems Engineers design and manage complex engineering systems over their life cycles, ensuring all components work together seamlessly and reliably.",
+    "blockchain developer": "Blockchain Developers design and build decentralized applications (dApps) and smart contracts on blockchain platforms like Ethereum.",
+    "wordpress developer": "WordPress Developers specialize in building and customizing websites using the WordPress CMS, creating themes, plugins, and custom solutions.",
+    "ios developer": "iOS Developers use Swift and Xcode to build applications specifically for Apple's ecosystem, including iPhone, iPad, and Apple Watch.",
+    "macos developer": "macOS Developers create applications that run natively on Apple's desktop computers, leveraging the full power of the operating system.",
+    "web designer": "Web Designers focus on the visual aesthetics and user experience of a website, creating layouts, color schemes, and graphics to produce a visually appealing final product.",
+    "ui developer": "UI Developers are similar to Frontend Developers but with a stronger focus on translating visual designs into pixel-perfect, interactive code.",
+    "email developer": "Email Developers specialize in coding HTML emails that are responsive and render correctly across dozens of different email clients.",
+    "react developer": "React Developers are specialists in the React library, building fast, component-based user interfaces for modern web applications.",
+    "api developer": "API Developers focus on designing, building, and maintaining the Application Programming Interfaces that allow different software systems to communicate with each other.",
+    "business intelligence analyst": "BI Analysts use data to help businesses make smarter decisions. They create dashboards and reports to track key performance indicators and analyze trends.",
+    "infrastructure engineer": "Infrastructure Engineers design, build, and maintain the foundational hardware and software of a company's IT systems, from servers to networks.",
+    "solutions architect": "Solutions Architects design high-level solutions to solve specific business problems, often involving the integration of multiple systems and cloud services.",
+    "ml engineer": "ML Engineers productionize machine learning models, taking them from a research environment and deploying them into scalable, real-world applications.",
+    "ai developer": "AI Developers work on creating systems that mimic human intelligence, including areas like natural language processing, computer vision, and expert systems.",
+    "machine learning specialist": "Machine Learning Specialists are experts in specific ML algorithms and techniques, often conducting research and developing new models.",
+    "computer vision engineer": "Computer Vision Engineers build systems that allow computers to 'see' and interpret the visual world from images and videos.",
+    "data visualisation specialist": "Data Visualisation Specialists are experts in turning complex data into clear, compelling, and insightful charts, graphs, and dashboards.",
+    "ethical hacker": "Ethical Hackers (or Penetration Testers) are hired to legally break into systems to find and report security vulnerabilities before malicious attackers can exploit them.",
+    "penetration tester": "Penetration Testers simulate cyberattacks on an organization's systems to identify security weaknesses that need to be fixed.",
+    "incident responder": "Incident Responders are the emergency services of cybersecurity. They are the first to act when a security breach occurs, working to contain the threat and minimize damage.",
+    "security engineer": "Security Engineers design and build systems to be secure from the ground up, implementing firewalls, encryption, and other protective measures.",
+    "product designer": "Product Designers have a broad role that encompasses UI/UX design, user research, and strategic thinking to shape the entire experience of a product.",
+    "statistician": "Statisticians apply statistical methods and models to real-world problems, often in research, finance, or government, to analyze data and forecast trends.",
+    "quantitative analyst": "Quantitative Analysts ('Quants') design and implement complex mathematical models for financial firms to price securities, manage risk, and identify trading opportunities."
 }
 
+conversation_memory = {}
 
-    
+intent_keywords = {
+    'ask_skills': [
+        r'skill', r'learn', r'need', r'require', r'what.*become', r'how.*become',
+        r'technolog', r'tech', r'stack', r'tools', r'study', r'want.*be', r'to be'
+    ],
+    'ask_careers': [
+        r'career', r'job', r'what.*do', r'pursue', r'with.*skill', r'path',
+        r'opportunity', r'can do', r'profficent', r'pretty good', r'familiar',
+        r'expert', r'know', r'good with', r'knowledge', r'work', r'role', r'field'
+    ]
+}
+
+career_priorities = [
+    ('frontend developer', 'web developer'),
+    ('backend developer', 'web developer'),
+    ('machine learning engineer', 'data scientist'),
+]
+
+acknowledgment_phrases = [
+    'i see', 'isee', 'okay', 'ok', 'oke', 'ok then', 
+    'got it', 'cool', 'ah okay', 'i understand', 'makes sense'
+]
+
 def detect_tech(message):
     message_lower = message.lower()
     detected_tech = []
-    
+    if re.search(r'\bc#\b|\bc sharp\b', message_lower):
+        detected_tech.append('c#')
     for tech in tech_to_career:
-        # Use word boundaries to ensure we're matching the whole word
-        if re.search(r'\b' + re.escape(tech) + r'\b', message_lower):
+        if tech == 'c#':  
+            continue
+        if ' ' in tech:
+            pattern = r'{}'.format(re.escape(tech))
+        else:
+            pattern = r'\b{}\b'.format(re.escape(tech))
+        if re.search(pattern, message_lower):
             detected_tech.append(tech)
-    
-    return detected_tech
+    return list(set(detected_tech))
 
 def detect_career(message):
     message_lower = message.lower()
-    
-    # More comprehensive career detection
     career_keywords = {
-        "web developer": r"web.*dev|website.*dev|front.?end|back.?end|full.?stack|web.*programmer",
-        "frontend developer": r"front.?end|ui.*dev|user.?interface|client.?side|front.*end",
-        "backend developer": r"back.?end|server.?side|api.*dev|database.*dev|back.*end",
-        "data scientist": r"data.*scien|machine.*learning|ai.*dev|artificial.*intelligence|analytics|ml.*engineer",
-        "devops engineer": r"devops|deployment|infrastructure|cloud|aws|azure|ci.?cd|continuous",
-        "mobile developer": r"mobile.*dev|ios.*dev|android.*dev|app.*dev|application.*dev|flutter|react.*native",
-        "ui ux designer": r"ui.*design|ux.*design|user.*experience|user.*interface|design|ux.*ui|ui.*ux",
-        "python developer": r"python.*dev|dev.*python",
-        "javascript developer": r"javascript.*dev|js.*dev|dev.*javascript",
-        "java developer": r"java.*dev|dev.*java",
-        "react developer": r"react.*dev|dev.*react",
-        "node.js developer": r"node.*dev|dev.*node",
-        "cloud engineer": r"cloud.*engineer|engineer.*cloud",
-        "cybersecurity specialist": r"cyber.*specialist|security.*specialist",
-        "database administrator": r"database.*admin|db.*admin|dba",
-        "machine learning engineer": r"ml.*engineer|machine.*learning.*engineer",
-        "ai developer": r"ai.*dev|artificial.*intelligence.*dev",
-        "cloud architect": r"cloud.*architect|architect.*cloud",
-        "security analyst": r"security.*analyst|cyber.*analyst",
-        "ethical hacker": r"ethical.*hacker|white.*hat|pen.*test",
-        "infrastructure engineer": r"infrastructure.*engineer|engineer.*infrastructure",
-        "api developer": r"api.*dev|dev.*api",
-        "ui engineer": r"ui.*engineer|engineer.*ui"
-    }
-    
+    "web developer": r"web.*(dev|develop|engine|program)|website.*(dev|develop|engine|program)|full.?stack",
+    "frontend developer": r"front.?end.*(dev|develop|engine)|ui.*(dev|develop|engine)|user.?interface.*(dev|develop|engine)|client.?side.*(dev|develop|engine)",
+    "backend developer": r"back.?end.*(dev|develop|engine)|server.?side.*(dev|develop|engine)|api.*(dev|develop|engine)",
+    "data scientist": r"data scien|data analy|machine learning scien|ml scien",
+    "devops engineer": r"devops|sre|site reliability|cloud engineer|infrastructure engineer|ci.?cd",
+    "mobile developer": r"mobile.*(dev|develop|engine)|app.*(dev|develop|program)|ios.*(dev|develop)|android.*(dev|develop)",
+    "ui ux designer": r"ui.*design|ux.*design|user.*experience|user.*interface|wirefram|prototyp",
+    ".net developer": r"\.net.*(dev|develop|engine)|c#.*(dev|develop|program)|c sharp.*(dev|develop)",
+    "machine learning engineer": r"ml engineer|machine learning engineer|mle",
+    "python developer": r"python.*(dev|develop|engine|program)",
+    "java developer": r"java.*(dev|develop|engine|program)",
+    "cybersecurity specialist": r"cyber ?security|infosec|security analy|ethical hack|penetration test|pen.?test|hack|hacker"
+}
     detected_careers = []
     for career, pattern in career_keywords.items():
         if re.search(pattern, message_lower):
             detected_careers.append(career)
-    
     return detected_careers
 
+def get_intent(message_lower):
+    scores = {intent: 0 for intent in intent_keywords}
+    for intent, patterns in intent_keywords.items():
+        for pattern in patterns:
+            if re.search(pattern, message_lower):
+                scores[intent] += 1
+    best_intent = max(scores, key=scores.get)
+    return best_intent if scores[best_intent] > 0 else None
+
+def prioritize_careers(detected_careers):
+    careers_set = set(detected_careers)
+    for high_priority, low_priority in career_priorities:
+        if high_priority in careers_set and low_priority in careers_set:
+            careers_set.discard(low_priority)
+    return list(careers_set)
+
 def get_response(message):
-    message_lower = message.lower()
+    message_lower = message.content.lower()
+    channel_id = message.channel.id
 
-    absurd_inputs = ["hmm", "uh", "...", "hmmm", "hmm.", "hmm?", "umm", "hmm!", "hmm.."]
-    career_keywords = ["career", "job", "skill", "technology", "tech", "learn", "become", "field", "role", "stack", "tools"]
-    if any(message_lower.strip() == ai for ai in absurd_inputs):
-        # Only respond if the message does NOT mention any career/skill keywords
-        if not any(kw in message_lower for kw in career_keywords):
-            return "Do you need help about careers or skills in IT fields?"
-
-    # Exit condition
     if re.search(r'\b(exit|quit|bye|goodbye)\b', message_lower):
+        conversation_memory.pop(channel_id, None)
         return "Goodbye! 👋"
     
-    # Thank you response
     if re.search(r'\b(thanks|thank you|appreciate it|thx)\b', message_lower):
-        return "You're welcome! If you have more questions, feel free to ask me."
+        return "You're welcome! If you have more questions, feel free to ask."
+    if re.search(r'\b(hi|hello|hey|greetings|howdy)\b', message_lower):
+        return "👋 Hello! I can help you with tech career guidance."
+
+    intent = get_intent(message_lower)
+    detected_techs = detect_tech(message.content)
+    detected_careers = detect_career(message.content)
     
-    # Greeting response
-    if re.search(r'\b(hi|hello|hey|greetings|howdy|good|morning|evening|night)\b', message_lower):
-        return "👋 Hello! I can help you with tech career guidance. "
-    
-    # Check if user is asking about careers for a technology
-    career_tech_pattern = r'career|job|what.*do|pursue|with.*skill|become|path|opportunity|ca|profficent|pretty good|familiar|expert|know|knowledge|work|role|roles|field|field of|field in|field with'
-    if re.search(career_tech_pattern, message_lower):
-        techs = detect_tech(message)
-        if techs:
+    last_intent = conversation_memory.get(channel_id)
+    if not intent and (detected_careers or detected_techs) and last_intent:
+        intent = last_intent
+
+    if intent == 'ask_skills':
+        conversation_memory[channel_id] = 'ask_skills'
+        prioritized_careers = prioritize_careers(detected_careers)
+        if prioritized_careers:
             response = ""
-            for tech in techs:
-                careers = tech_to_career.get(tech, [])
-                if careers:
-                    response += f"With {tech.title()} skills, you could pursue these careers:\n"
-                    for career in careers:
-                        # Convert to lowercase to match our job_descriptions keys
-                        career_lower = career.lower()
-                        desc = job_descriptions.get(career_lower, "No description available.")
-                        response += f"- {career}: {desc}\n"
-                    response += "\n"
-            return response if response else "I'm not sure which technology you're referring to. Could you specify?"
-    
-    # Check if user is asking about skills/technologies for a career
-    career_query_pattern = r'skill|learn|need|require|what.*become|how.*become|technolog|tech|stack|tools|knowledge|study|want.*be|to be'
-    if re.search(career_query_pattern, message_lower) or any(word in message_lower for word in ["become a", "to be a"]):
-        careers = detect_career(message)
-        if careers:
-            response = ""
-            for career in careers:
+            for career in prioritized_careers:
                 techs = career_to_tech.get(career, [])
                 if techs:
-                    desc = job_descriptions.get(career, "No description available.")
-                    response += f"To become a {career.title()}, you should learn these technologies:\n- " + "\n- ".join(techs) + f"\n\n{desc}\n\n"
-            return response if response else "I'm not sure about that career path. Could you specify which tech career you're interested in?"
+                    desc = job_descriptions.get(career, "")
+                    response += f"To become a **{career.title()}**, you should learn:\n- " + "\n- ".join(techs) + f"\n\n*{desc}*\n\n"
+            return response or "I don't have specific skill data for that career path yet."
         else:
-            # If we can't detect a specific career, provide general guidance
-            return "If you're interested in a tech career, here are some common paths:\n\n" \
-                   "• Web Development: HTML, CSS, JavaScript, React/Node.js\n" \
-                   "• Data Science: Python, SQL, Machine Learning, Statistics\n" \
-                   "• DevOps: AWS, Docker, Kubernetes, CI/CD\n" \
-                   "• Mobile Development: iOS (Swift), Android (Kotlin/Java), Cross-platform (Flutter/React Native)\n\n" \
-                   "Which specific career are you interested in?"
-    
-    # Default response for other queries
-    return "I specialize in tech career guidance. You can ask me:\n• What skills do I need to become a [job title]?\n• What careers can I pursue with [technology] skills?"
+            return "I can help with that! Which specific tech career are you interested in learning the skills for?"
 
+    if intent == 'ask_careers':
+        conversation_memory[channel_id] = 'ask_careers'
+        if detected_techs:
+            response = ""
+            for tech in detected_techs:
+                careers = tech_to_career.get(tech, [])
+                if careers:
+                    response += f"With **{tech.title()}** skills, you could pursue these careers:\n"
+                    for career in careers:
+                        desc = job_descriptions.get(career.lower(), "No description available.")
+                        response += f"- **{career}**: {desc}\n"
+                    response += "\n"
+            return response or "I don't have career path data for that technology yet."
+        else:
+            return "I can definitely help with career paths. Which technology or skill are you proficient in?"
+    
+    if message_lower.strip() in acknowledgment_phrases and channel_id in conversation_memory:
+        return "Great! Do you have any other questions about tech careers?"
+            
+    conversation_memory.pop(channel_id, None)
+    return "I specialize in tech career guidance. You can ask me:\n• What skills do I need to become a [job title]?\n• What careers can I pursue with [technology] skills?"
 @client.event
 async def on_message(message):
     if message.author == client.user:
         return
-
-    response = get_response(message.content)
+    response = get_response(message)
     if response:
         await message.channel.send(response)
 
