@@ -19,17 +19,25 @@ conversation_memory = {}
 def detect_tech(message):
     message_lower = message.lower()
     detected_tech = []
+    
+    # Handle C# separately first
     if re.search(r'\bc#\b|\bc sharp\b', message_lower):
         detected_tech.append('c#')
+    
+    # Check for all other technologies
     for tech in tech_to_career:
-        if tech == 'c#':  
+        if tech == 'c#':  # Skip C# as we already handled it
             continue
+        
+        # Create pattern based on whether the tech has spaces
         if ' ' in tech:
             pattern = r'{}'.format(re.escape(tech))
         else:
             pattern = r'\b{}\b'.format(re.escape(tech))
+            
         if re.search(pattern, message_lower):
             detected_tech.append(tech)
+    
     return list(set(detected_tech))
 
 def detect_career(message):
@@ -100,7 +108,9 @@ def get_response(message):
                 if careers:
                     response += f"With **{tech.title()}** skills, you could pursue these careers:\n"
                     for career in careers:
-                        desc = job_descriptions.get(career.lower(), "No description available.")
+                        # Find the career key (case-insensitive match)
+                        career_key = next((k for k in job_descriptions.keys() if k.lower() == career.lower()), career)
+                        desc = job_descriptions.get(career_key, "No description available.")
                         response += f"- **{career}**: {desc}\n"
                     response += "\n"
             return response or "I don't have career path data for that technology yet."
