@@ -3,10 +3,9 @@ import sys
 import os
 import logging
 
-# Make sure we can import bot.py from parent directory
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import bot  # <-- This loads your bot.py but won't auto-run client.run() thanks to the __main__ check
+import bot 
 
 # --- Configure logging ---
 logging.basicConfig(
